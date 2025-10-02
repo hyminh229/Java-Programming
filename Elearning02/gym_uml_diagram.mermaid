@@ -1,0 +1,181 @@
+classDiagram
+    class User {
+        <<abstract>>
+        -String userId
+        -String username
+        -String password
+        -String email
+        -String phone
+        +User(userId, username, password, email, phone)
+        +login() boolean
+        +logout() void
+        +getUserId() String
+        +getUsername() String
+    }
+
+    class Admin {
+        +Admin(userId, username, password, email, phone)
+        +addMember(Member) void
+        +updateMember(Member) void
+        +deleteMember(memberId) void
+        +addTrainer(Trainer) void
+        +addSubscriptionPlan(SubscriptionPlan) void
+        +generateRevenueReport() Report
+        +generateAttendanceReport() Report
+        +viewAllMembers() List~Member~
+    }
+
+    class Trainer {
+        -String specialization
+        -List~Member~ assignedMembers
+        +Trainer(userId, username, password, email, phone, specialization)
+        +createWorkoutSchedule(Member, WorkoutSchedule) void
+        +assignWorkoutToMember(memberId, scheduleId) void
+        +trackAttendance(memberId, date) void
+        +viewMemberProgress(memberId) Progress
+        +getAssignedMembers() List~Member~
+    }
+
+    class Member {
+        -String memberId
+        -Date registrationDate
+        -Subscription currentSubscription
+        -List~WorkoutSchedule~ workoutSchedules
+        -List~Attendance~ attendanceRecords
+        -Progress progress
+        +Member(userId, username, password, email, phone)
+        +viewWorkoutSchedule() List~WorkoutSchedule~
+        +updateProgress(Progress) void
+        +renewSubscription(SubscriptionPlan) void
+        +checkSubscriptionStatus() String
+        +getAttendancePercentage() double
+    }
+
+    class Subscription {
+        -String subscriptionId
+        -SubscriptionPlan plan
+        -Date startDate
+        -Date endDate
+        -boolean isActive
+        -double amount
+        +Subscription(subscriptionId, plan, startDate)
+        +isExpired() boolean
+        +renew(SubscriptionPlan) void
+        +calculateEndDate() Date
+        +getStatus() String
+    }
+
+    class SubscriptionPlan {
+        -String planId
+        -String planName
+        -int durationMonths
+        -double price
+        -String description
+        +SubscriptionPlan(planId, planName, duration, price)
+        +getPlanDetails() String
+        +getPrice() double
+    }
+
+    class WorkoutSchedule {
+        -String scheduleId
+        -String memberId
+        -String trainerId
+        -Date date
+        -List~Exercise~ exercises
+        -String notes
+        +WorkoutSchedule(scheduleId, memberId, trainerId, date)
+        +addExercise(Exercise) void
+        +removeExercise(exerciseId) void
+        +getExercises() List~Exercise~
+    }
+
+    class Exercise {
+        -String exerciseId
+        -String name
+        -String type
+        -int sets
+        -int reps
+        -String description
+        +Exercise(exerciseId, name, type, sets, reps)
+        +getExerciseDetails() String
+    }
+
+    class Attendance {
+        -String attendanceId
+        -String memberId
+        -Date date
+        -Time checkInTime
+        -Time checkOutTime
+        -boolean present
+        +Attendance(attendanceId, memberId, date)
+        +markPresent() void
+        +markAbsent() void
+        +getDuration() int
+    }
+
+    class Progress {
+        -String progressId
+        -String memberId
+        -Date date
+        -double weight
+        -double bodyFat
+        -int workoutsCompleted
+        -String notes
+        +Progress(progressId, memberId, date)
+        +updateMetrics(weight, bodyFat) void
+        +incrementWorkouts() void
+        +getProgressSummary() String
+    }
+
+    class Report {
+        -String reportId
+        -String reportType
+        -Date generatedDate
+        -String content
+        +Report(reportId, reportType)
+        +generateRevenue(List~Subscription~) void
+        +generateAttendance(List~Attendance~) void
+        +exportToCSV(filename) void
+        +getReportContent() String
+    }
+
+    class GymManagementSystem {
+        -List~Member~ members
+        -List~Trainer~ trainers
+        -List~Admin~ admins
+        -List~SubscriptionPlan~ plans
+        -List~Attendance~ attendanceRecords
+        +GymManagementSystem()
+        +registerUser(User) void
+        +authenticateUser(username, password) User
+        +saveMembersToFile() void
+        +loadMembersFromFile() void
+        +saveAttendanceToFile() void
+        +loadAttendanceFromFile() void
+    }
+
+    class DataManager {
+        <<interface>>
+        +saveToJSON(filename, data) void
+        +loadFromJSON(filename) Object
+        +saveToCSV(filename, data) void
+        +loadFromCSV(filename) List
+        +exportReport(filename, report) void
+    }
+
+    User <|-- Admin
+    User <|-- Trainer
+    User <|-- Member
+    Member "1" --> "0..1" Subscription
+    Subscription "1" --> "1" SubscriptionPlan
+    Member "1" --> "*" WorkoutSchedule
+    Member "1" --> "*" Attendance
+    Member "1" --> "*" Progress
+    WorkoutSchedule "1" --> "*" Exercise
+    Trainer "1" --> "*" WorkoutSchedule
+    Admin "1" --> "*" Report
+    GymManagementSystem "1" --> "*" Member
+    GymManagementSystem "1" --> "*" Trainer
+    GymManagementSystem "1" --> "*" Admin
+    GymManagementSystem "1" --> "*" SubscriptionPlan
+    GymManagementSystem ..> DataManager
