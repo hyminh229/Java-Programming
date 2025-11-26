@@ -1,0 +1,10 @@
+/* Bootstrap placeholder - In production, use actual Bootstrap CSS */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
